@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="Skill_matrix:war">
+    <output-path>C:/Tomcat/webapps</output-path>
+    <root id="archive" name="Skill_matrix.war">
+      <element id="artifact" artifact-name="Skill_matrix:war exploded" />
+    </root>
+  </artifact>
+</component>
