@@ -96,25 +96,35 @@ public class SkillsController {
         return "error";
     }
 
-
-
-
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(value = "/category/{categoryName}", method = RequestMethod.DELETE, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public Category putMyData(@RequestBody Category md) {
-        return md;
+    public String deleteCategoryByName(@PathVariable String categoryName) {
+        try {
+            System.out.println("in delete"+categoryName);
+            ServiceFactory serviceFactory = ServiceFactory.getInstance();
+            SkillService skillService = serviceFactory.getSkillService();
+            boolean result = skillService.deleteCategory(categoryName);
+            return mapper.writeValueAsString(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "error";
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "/category/{categoryName}", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public boolean newSkill(@RequestBody Category category) {
-        System.out.println(category);
-        return true;
+    public String addSubCategory(@PathVariable String categoryName, @RequestBody String subCategoryName) {
+        try {
+            JSONObject json = new JSONObject(subCategoryName);
+            subCategoryName = json.get("subCategoryName").toString();
+            ServiceFactory serviceFactory = ServiceFactory.getInstance();
+            SkillService skillService = serviceFactory.getSkillService();
+            boolean result = skillService.addSubCategory(categoryName, subCategoryName);
+            return mapper.writeValueAsString(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "error";
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public Category deleteMyData(@PathVariable long time) {
-        return new Category();
-    }
 }

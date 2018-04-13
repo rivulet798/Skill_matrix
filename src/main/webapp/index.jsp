@@ -4,7 +4,7 @@
     <head>
         <link href="css/style.css" rel="stylesheet">
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <script src="js/jquery-3.2.1.min.js"></script>
         <script src="js/script.js"></script>
     </head>
 

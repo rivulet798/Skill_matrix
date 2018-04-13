@@ -10,5 +10,7 @@ public interface SkillService {
     Category getCategoryByName(String categoryName);
     List<Category> searchCategoriesByPartOfName(String partOfName);
     boolean editCategory(String oldCategoryName, String editCategoryName);
+    boolean deleteCategory(String categoryName);
+    boolean addSubCategory(String categoryName, String subCategoryName);
 
 }

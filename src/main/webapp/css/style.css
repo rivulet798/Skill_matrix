@@ -19,7 +19,7 @@
     flex-direction: row;
 }
 
-#main_categories > .button {
+#main_categories > .child {
     -webkit-flex: auto;
     flex: auto;
 }
@@ -34,10 +34,10 @@
     padding-right: 25px;
     outline: none;
     height: 40px;
+    width: 900px;
 }
 .button span {
     line-height: 13px;
-    padding: 7px 0 13px 23px;
     content: "\f002";
     font-family: FontAwesome;
     font-size: 20px;
@@ -66,7 +66,23 @@
     padding: 8px 0 12px 23px; /* опускаем текст на 1px */
 }
 
-
+.main_button{
+    width: 200px !important;
+}
+.add{
+    background-color: #98FB98 !important;
+    width: 20px !important;
+}
+.del{
+    background-color: #FFA07A !important;
+    width: 50px !important;
+}
+.save{
+    width: 25px !important;
+}
+.cancel{
+    width: 50px !important;
+}
 /*SUBCATEGORIES*/
 
 .container {
@@ -81,6 +97,22 @@
     flex: auto;
 }
 
+/*SUBCATEGORIES*/
+
+.categoryContainer {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+}
+
+.categoryContainer > .button {
+    -webkit-flex: auto;
+    flex: auto;
+}
+
+
+
 #subCategories {
     display: -webkit-flex;
     display: flex;
@@ -88,7 +120,7 @@
     flex-direction: column;
 }
 
-#subCategories > .button {
+#subCategories > .container {
     -webkit-flex: auto;
     flex: auto;
 }
@@ -159,27 +191,9 @@ form input {
 }
 
 /*EDIT*/
-.edit_container > .edit_child {
+.edit_container > .button {
     -webkit-flex: auto;
     flex: auto;
-}
-.edit_child {
-    font: bold 12px arial, sans-serif;
-    color: #555;
-    text-decoration: none;
-    background-color: aliceblue;
-    padding-right: 25px;
-    outline: none;
-    height: 40px;
-}
-.edit_child span {
-    line-height: 13px;
-    padding: 7px 0 13px 23px;
-    content: "\f002";
-    font-family: FontAwesome;
-    font-size: 20px;
-    color: #555555;
-    text-align: left;
 }
 
 

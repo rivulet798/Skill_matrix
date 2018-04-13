@@ -21,7 +21,7 @@ public class SkillServiceImpl implements SkillService {
     public List<Category> getSubCategories(String categoryName) {
         DaoFactory daoFactory = DaoFactory.getInstance();
         FileWorker fileWorker = daoFactory.getFileWorker();
-        List<Category> categories = fileWorker.getCategories();
+        List<Category> categories = fileWorker.parse("SkillMatrix.xls");
         categoryName = categoryName.replace("@","/");
         Category category = findCategoryByName(categoryName, categories);
         return category.getSubCategories();
@@ -39,7 +39,7 @@ public class SkillServiceImpl implements SkillService {
     private Category findCategoryByName(String categoryName, List<Category> categories){
         Category categoryFound = null;
         for(Category category : categories){
-            if(category.getName().equals(categoryName)){
+            if(category.getName().trim().equals(categoryName.trim())){
                 categoryFound = category;
                 return categoryFound;
             } else {
@@ -72,6 +72,34 @@ public class SkillServiceImpl implements SkillService {
         return fileWorker.editCategory(oldCategoryName, editCategoryName);
     }
 
+    @Override
+    public boolean deleteCategory(String categoryName) {
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        FileWorker fileWorker = daoFactory.getFileWorker();
+        categoryName = categoryName.replace("@","/");
+        List<Category> categories = fileWorker.getCategories();
+        List<String> categoriesToDelete = makeCategoryToDeleteList(categoryName, categories);
+        for(String categoryToDelete : categoriesToDelete){
+            fileWorker.deleteCategory(categoryToDelete);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addSubCategory(String categoryName, String subCategoryName) {
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        FileWorker fileWorker = daoFactory.getFileWorker();
+        categoryName = categoryName.replace("@","/");
+        List<Category> categories = fileWorker.getCategories();
+        Category category = findCategoryByName(categoryName, categories);
+        List<Category> subCategories = category.getSubCategories();
+        Category newSubCategory = new Category(subCategoryName, category.getLevel() + 1, null, category);
+        subCategories.add(newSubCategory);
+        fileWorker.rewriteFile(categories);
+        return true;
+
+     }
+
     private List<Category> findCategoriesByPartOfName(String partOfName, List<Category> categories){
         List<Category> categoriesFound = new ArrayList<>();
         partOfName = partOfName.toLowerCase();
@@ -90,4 +118,23 @@ public class SkillServiceImpl implements SkillService {
         return categoriesFound;
     }
 
+    private List<String> makeCategoryToDeleteList(String categoryName, List<Category> categories){
+        Category category = findCategoryByName(categoryName, categories);
+        List<String> categoriesForDelete = new ArrayList<>();
+        categoriesForDelete.add(categoryName);
+        addSubcategoriesToDeleteList(category, categoriesForDelete);
+        return categoriesForDelete;
+    }
+
+    private List<String> addSubcategoriesToDeleteList(Category category, List<String> categoriesForDelete){
+        List<Category> subCategories = category.getSubCategories();
+        if(subCategories != null) {
+            for(Category subCategory : subCategories){
+                categoriesForDelete.add(subCategory.getName());
+                addSubcategoriesToDeleteList(subCategory, categoriesForDelete);
+            }
+
+        }
+        return categoriesForDelete;
+    }
 }

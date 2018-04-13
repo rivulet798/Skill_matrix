@@ -4,6 +4,7 @@ import by.epam.beans.Category;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 
@@ -28,9 +29,9 @@ public class FileWorker implements Serializable{
         ClassLoader classLoader = this.getClass().getClassLoader();
         this.file = new File(classLoader.getResource(fileName).getFile());
 
-        try(FileInputStream fileInputStream = new FileInputStream(file.getPath())) {
+        try(FileInputStream fileInputStream = new FileInputStream(file.getPath());
+            Workbook workbook = new HSSFWorkbook(fileInputStream)) {
 
-            Workbook workbook = new HSSFWorkbook(fileInputStream);
             Sheet sheet = workbook.getSheetAt(0);
             Iterator rowIterator = sheet.rowIterator();
             String infoFromFile;
@@ -103,7 +104,6 @@ public class FileWorker implements Serializable{
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-        System.out.println(categories);
         return categories;
     }
 
@@ -180,17 +180,16 @@ public class FileWorker implements Serializable{
                     int columnIndex = cell.getColumnIndex();
                     infoFromFile = getCellText(cell);
                     if(infoFromFile.equals(oldCategoryName)){
-                        System.out.println("MIII NASHLIIIII");
                         cell.setCellValue(editCategoryName);
                         try(FileOutputStream fileOutputStream = new FileOutputStream(file.getPath())) {
                             workbook.write(fileOutputStream);
                         }
-                        parse("SkillMatrix.xls");
+                        categories = parse(file.getName());
                         return true;
                     }
                 }
-
             }
+            workbook.close();
 
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
@@ -198,5 +197,72 @@ public class FileWorker implements Serializable{
             logger.error(e.getMessage());
         }
         return false;
+    }
+
+    public boolean deleteCategory(String categoryName){
+        try(FileInputStream fileInputStream = new FileInputStream(file.getPath())) {
+
+            Workbook workbook = new HSSFWorkbook(fileInputStream);
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator rowIterator = sheet.rowIterator();
+            String infoFromFile;
+
+            while (rowIterator.hasNext()) {
+                HSSFRow row = (HSSFRow) rowIterator.next();
+                Iterator cellIterator = row.cellIterator();
+                while (cellIterator.hasNext()) {
+                    HSSFCell cell = (HSSFCell) cellIterator.next();
+                    infoFromFile = getCellText(cell);
+                    if (infoFromFile.equals(categoryName)) {
+                        sheet.removeRow(row);
+                        int rowIndex = row.getRowNum();
+                        int lastRowNum = sheet.getLastRowNum();
+                        if (rowIndex >= 0 && rowIndex < lastRowNum) {
+                            sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
+                        }
+                        try(FileOutputStream fileOutputStream = new FileOutputStream(file.getPath())) {
+                            workbook.write(fileOutputStream);
+                        }
+                        return true;
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+        return true;
+    }
+
+    public boolean rewriteFile(List<Category> categories){
+        cleanFile(file.getName());
+
+
+
+        return false;
+    }
+
+    private boolean cleanFile(String fileName){
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        this.file = new File(classLoader.getResource(fileName).getFile());
+
+        try(FileInputStream fileInputStream = new FileInputStream(file.getPath());
+            HSSFWorkbook workbook = new HSSFWorkbook(fileInputStream);
+            FileOutputStream fileOutputStream = new FileOutputStream(file.getPath());) {
+
+            HSSFSheet sheet = workbook.getSheetAt(0);
+            for(int i=1; i<= sheet.getLastRowNum(); i++){
+                Row row = sheet.getRow(i);
+                sheet.removeRow(row);
+            }
+            workbook.write(fileOutputStream);
+
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+        return true;
     }
 }

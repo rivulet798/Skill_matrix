@@ -19,6 +19,13 @@ public class Category {
         subCategories = new ArrayList<>();
     }
 
+    public Category(String name, int level, List<Category> subCategories, Category parentCategory) {
+        this.name = name;
+        this.level = level;
+        this.subCategories = subCategories;
+        this.parentCategory = parentCategory;
+    }
+
     public String getName() {
         return name;
     }
