@@ -90,6 +90,7 @@ public class SkillServiceImpl implements SkillService {
         DaoFactory daoFactory = DaoFactory.getInstance();
         FileWorker fileWorker = daoFactory.getFileWorker();
         categoryName = categoryName.replace("@","/");
+        subCategoryName = subCategoryName.replace("@","/");
         List<Category> categories = fileWorker.getCategories();
         Category category = findCategoryByName(categoryName, categories);
         List<Category> subCategories = category.getSubCategories();

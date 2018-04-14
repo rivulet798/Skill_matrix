@@ -237,9 +237,29 @@ public class FileWorker implements Serializable{
 
     public boolean rewriteFile(List<Category> categories){
         cleanFile(file.getName());
+        try(FileInputStream fileInputStream = new FileInputStream(file.getPath());
+            HSSFWorkbook workbook = new HSSFWorkbook(fileInputStream);
+            FileOutputStream fileOutputStream = new FileOutputStream(file.getPath());) {
 
+            HSSFSheet sheet = workbook.getSheetAt(0);
 
-
+            int level;
+            String categoryName;
+            for(int i=1; i <= categories.size(); i++){
+                level = categories.get(i).getLevel();
+                categoryName = categories.get(i).getName();
+                Row row = sheet.createRow(i);
+                Cell cell = row.createCell(level);
+                cell.setCellValue(categoryName);
+            }
+            workbook.write(fileOutputStream);
+            System.out.println("VozvRACHAEM TRUE!!!!!!!!!!!!");
+            return true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 

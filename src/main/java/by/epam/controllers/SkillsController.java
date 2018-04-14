@@ -119,6 +119,7 @@ public class SkillsController {
             subCategoryName = json.get("subCategoryName").toString();
             ServiceFactory serviceFactory = ServiceFactory.getInstance();
             SkillService skillService = serviceFactory.getSkillService();
+            System.out.println("In addddd"+ categoryName + " " + subCategoryName);
             boolean result = skillService.addSubCategory(categoryName, subCategoryName);
             return mapper.writeValueAsString(result);
         } catch (IOException e) {
