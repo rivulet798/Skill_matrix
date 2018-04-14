@@ -231,7 +231,6 @@ function insert_edit_block(categoryName) {
     changeAdd.id = categoryName+"_save";
     changeAdd.value = "Save";
     changeAdd.className = "button save";
-
     changeAdd.onclick = function(event) {
         var editCategoryName = category.value;
         edit(categoryName, editCategoryName);
@@ -254,19 +253,65 @@ function insert_edit_block(categoryName) {
                 break;
 
             default:
+                var save = document.getElementById(categoryName+"_save");
+                var changeCategory = document.getElementById(categoryName);
+                var container = document.getElementById("main_categories");
+
+                if(category.value.length < 2){
+                    var editCategory = document.getElementById(categoryName);
+                    if (editCategory.parentElement.parentElement === container) {
+                        editCategory.className = "button main_error";
+                    } else {
+                        editCategory.className = "button error";
+                    }
+                    save.onclick = function (ev) {
+                        this.disabled = true;
+                    }
+                }
                 // производим поиск только при вводе более 2х символов
                 if (category.value.length > 1 && category.value !== categoryName) {
-                    var name = category.value;
+                    var editName = category.value;
                     var xhttp = new XMLHttpRequest();
                     xhttp.onreadystatechange = function () {
+                        changeAdd.disabled = false;
                         if (this.readyState == 4 && this.status == 200) {
                             var category = JSON.parse(this.responseText);
+                            var editCategory = document.getElementById(categoryName);
                             if (category !== null) {
-                                alert("false");
+                                if(editName.trim() != categoryName.trim()) {
+                                    if (editCategory.parentElement.parentElement === container) {
+                                        editCategory.className = "button main_error";
+                                    } else {
+                                        editCategory.className = "button error";
+                                    }
+                                    save.onclick = function (ev) {
+                                        this.disabled = true;
+                                    }
+                                } else {
+                                    if (editCategory.parentElement.parentElement === container) {
+                                        editCategory.className = "button main_button";
+                                    } else {
+                                        editCategory.className = "button";
+                                    }
+                                    save.onclick = function (ev) {
+                                        var editCategoryName = changeCategory.value;
+                                        edit(categoryName, editCategoryName);
+                                    }
+                                }
+                            } else{
+                                if (editCategory.parentElement.parentElement === container) {
+                                    editCategory.className = "button main_button";
+                                } else {
+                                    editCategory.className = "button";
+                                }
+                                save.onclick = function (ev) {
+                                    var editCategoryName = changeCategory.value;
+                                    edit(categoryName, editCategoryName);
+                                }
                             }
                         }
                     };
-                    xhttp.open("GET", "skills/category/" + name, true);
+                    xhttp.open("GET", "skills/category/" + editName, true);
                     xhttp.send();
                 }
                 break;
@@ -616,8 +661,7 @@ function insertAddInput(categoryName, color){
         save.className = 'button save';
         save.value = "Save";
         save.onclick = function (event) {
-            var subCategoryName = newCategory.value;
-            add(categoryName, subCategoryName);
+            this.disabled = true;
         };
 
         var cancel = document.createElement('input');
@@ -632,7 +676,7 @@ function insertAddInput(categoryName, color){
         var newCategory = document.createElement('input');
         newCategory.id = "newCategory";
         newCategory.type = 'input';
-        newCategory.className = 'button';
+        newCategory.className = 'button error';
         newCategory.value = " ";
         newCategory.style.backgroundColor = color;
 
@@ -647,6 +691,52 @@ function insertAddInput(categoryName, color){
 
         var div = document.getElementById(categoryName + "child");
         div.insertBefore(categoryContainer, div.firstChild);
+
+        newCategory.onkeyup = function (I) {
+            // определяем какие действия нужно делать при нажатии на клавиатуру
+            switch (I.keyCode) {
+                // игнорируем нажатия на эти клавишы
+                case KEYCODE_ENTER:  // enter
+                case KEYCODE_ESC:  // escape
+                    break;
+
+                default:
+                    var save = document.getElementById("saveNewCategory");
+
+                    if(newCategory.value.trim().length < 2){
+                        newCategory.className = "button error";
+                        save.onclick = function (ev) {
+                            this.disabled = true;
+                        }
+                    }
+                    // производим поиск только при вводе более 2х символов
+                    if (newCategory.value.trim().length > 1) {
+                        var editName = newCategory.value;
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function () {
+                            save.disabled = false;
+                            if (this.readyState == 4 && this.status == 200) {
+                                var category = JSON.parse(this.responseText);
+                                if (category !== null) {
+                                    newCategory.className = "button error";
+                                    save.onclick = function (ev) {
+                                        this.disabled = true;
+                                    }
+                                } else{
+                                    newCategory.className = "button";
+                                    save.onclick = function (ev) {
+                                        var subCategoryName = newCategory.value.trim();
+                                        add(categoryName, subCategoryName);
+                                    }
+                                }
+                            }
+                        };
+                        xhttp.open("GET", "skills/category/" + editName, true);
+                        xhttp.send();
+                    }
+                    break;
+            }
+        };
     }
  }
 
@@ -680,6 +770,7 @@ function add(categoryName, subCategoryName) {
                     };
 
                     var category = document.getElementById("newCategory");
+                    category.id = subCategoryName;
                     category.type = "button";
                     category.value = subCategoryName;
 

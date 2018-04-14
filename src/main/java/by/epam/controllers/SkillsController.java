@@ -66,13 +66,13 @@ public class SkillsController {
         return "error";
     }
 
-    @RequestMapping(value = "/category/{name}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+    @RequestMapping(value = "/category/{editName}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String getCategoryByName(@PathVariable String name) {
+    public String getCategoryByName(@PathVariable String editName) {
         try {
             ServiceFactory serviceFactory = ServiceFactory.getInstance();
             SkillService skillService = serviceFactory.getSkillService();
-            Category category = skillService.getCategoryByName(name);
+            Category category = skillService.getCategoryByName(editName);
             return mapper.writeValueAsString(category);
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,7 +100,6 @@ public class SkillsController {
     @ResponseBody
     public String deleteCategoryByName(@PathVariable String categoryName) {
         try {
-            System.out.println("in delete"+categoryName);
             ServiceFactory serviceFactory = ServiceFactory.getInstance();
             SkillService skillService = serviceFactory.getSkillService();
             boolean result = skillService.deleteCategory(categoryName);

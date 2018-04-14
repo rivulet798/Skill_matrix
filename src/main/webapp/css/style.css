@@ -83,6 +83,15 @@
 .cancel{
     width: 50px !important;
 }
+.error{
+    border-color: red !important;
+    border-width: 3px !important;
+}
+.main_error{
+    width: 200px !important;
+    border-color: red !important;
+    border-width: 3px !important;
+}
 /*SUBCATEGORIES*/
 
 .container {
