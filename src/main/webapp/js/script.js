@@ -18,6 +18,10 @@ function loadSkillMatrix() {
 }
 
 function insert_main_categories(categoryName, number_of_subcategories){
+    if(categoryName !== null){
+        categoryName = categoryName.trim();
+    }
+
     var category = document.createElement('input');
     category.id = categoryName;
     category.type = 'button';
@@ -74,6 +78,7 @@ function open_close_subcategories(categoryName){
             div.remove();
         }
     }
+    categoryName = categoryName.trim();
     previous_click = categoryName;
 }
 
@@ -89,6 +94,9 @@ function loadSubCategories(categoryName) {
                 var colorsArray = [ '#FFE4B5', '#98FB98', '#FFB6C1', '#FFA07A', ' #B0E0E6', '#E6E6FA', '#FFB6C1', '#F0FFFF', '#AFEEEE', '#8FBC8F' ];
                 for (var index = 0; index < categories.length; index++) {
                     var name = categories[index].name;
+                    if(name !== null){
+                        name = name.trim();
+                    }
 
                     var add = document.createElement('input');
                     add.id = name+"_add";
@@ -160,6 +168,9 @@ function loadSubCategories(categoryName) {
 
 
 function open_close_edit(categoryName){
+    if(categoryName !== null) {
+        categoryName = categoryName.trim();
+    }
     var save = document.getElementById(categoryName + "_save");
     var cancel = document.getElementById(categoryName + "_cancel");
     if(save===null){
@@ -170,6 +181,9 @@ function open_close_edit(categoryName){
 }
 
 function delete_edit_block(categoryName) {
+    if(categoryName !== null) {
+        categoryName = categoryName.trim();
+    }
     var changeSave = document.getElementById(categoryName + "_save");
     var changeCancel = document.getElementById(categoryName + "_cancel");
     if(changeSave!==null) {
@@ -204,6 +218,10 @@ function delete_edit_block(categoryName) {
 }
 
 function insert_edit_block(categoryName) {
+    if(categoryName !== null) {
+        categoryName = categoryName.replace("/","@");
+        categoryName = categoryName.trim();
+    }
     var category = document.getElementById(categoryName);
     category.type = "input";
     category.value = categoryName;
@@ -248,7 +266,6 @@ function insert_edit_block(categoryName) {
                             }
                         }
                     };
-                    categoryName = categoryName.replace("/","@");
                     xhttp.open("GET", "skills/category/" + name, true);
                     xhttp.send();
                 }
@@ -421,6 +438,12 @@ function searchCategoriesByPartOfName() {
 
 
 function edit(categoryName, editCategoryName) {
+    if(categoryName !== null){
+        categoryName = categoryName.trim();
+    }
+    if(editCategoryName !== null){
+        editCategoryName = editCategoryName.trim();
+    }
     editCategoryName = editCategoryName.replace("/","@");
     var json = JSON.stringify({
         editCategoryName: editCategoryName
@@ -449,7 +472,9 @@ function edit(categoryName, editCategoryName) {
                     del.onclick = function (ev) {
                         deleteCategory(editCategoryName);
                     };
-                    subcategories.id = editCategoryName+"child";
+                    if(subcategories !== null) {
+                        subcategories.id = editCategoryName + "child";
+                    }
                 }
             }
         };
@@ -462,7 +487,9 @@ function edit(categoryName, editCategoryName) {
 }
 
 function deleteCategory(categoryName) {
-    alert(categoryName);
+    if(categoryName !== null){
+        categoryName = categoryName.trim();
+    }
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -506,6 +533,9 @@ function addSubcategory(categoryName){
                 var colorsArray = [ '#FFE4B5', '#98FB98', '#FFB6C1', '#FFA07A', ' #B0E0E6', '#E6E6FA', '#FFB6C1', '#F0FFFF', '#AFEEEE', '#8FBC8F' ];
                 for (var index = 0; index < categories.length; index++) {
                     var name = categories[index].name;
+                    if(name !== null){
+                        name = name.trim();
+                    }
 
                     var add = document.createElement('input');
                     add.id = name+"_add";
@@ -621,7 +651,12 @@ function insertAddInput(categoryName, color){
  }
 
 function add(categoryName, subCategoryName) {
-    alert(categoryName + " " + subCategoryName);
+    if(categoryName !== null){
+        categoryName = categoryName.trim();
+    }
+    if(subCategoryName !== null){
+        subCategoryName = subCategoryName.trim();
+    }
     subCategoryName = subCategoryName.replace("/","@");
     var json = JSON.stringify({
         subCategoryName: subCategoryName
