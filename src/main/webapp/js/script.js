@@ -633,25 +633,29 @@ function add(categoryName, subCategoryName) {
             if (this.readyState == 4 && this.status == 200) {
                 var result = JSON.parse(this.responseText);
                 if(result === true){
-                    alert("ADDED");
-                    // categoryName = categoryName.replace("@","/");
-                    // editCategoryName = editCategoryName.replace("@","/");
-                    // delete_edit_block(categoryName);
-                    // var category = document.getElementById(categoryName);
-                    // category.value = editCategoryName;
-                    // category.id = editCategoryName;
-                    // var add = document.getElementById(categoryName+"_add");
-                    // var del = document.getElementById(categoryName+"_del");
-                    // var subcategories = document.getElementById(categoryName+"child");
-                    // add.id = editCategoryName+"_add";
-                    // add.onclick = function (ev) {
-                    //     addSubcategory(editCategoryName);
-                    // };
-                    // del.id = editCategoryName+"_del";
-                    // del.onclick = function (ev) {
-                    //     deleteCategory(editCategoryName);
-                    // };
-                    // subcategories.id = editCategoryName+"child";
+                    var div = document.getElementById("newCategoryContainer");
+                    div.id = categoryName+"_categoryContainer";
+
+                    var changeSaveToAdd = document.getElementById("saveNewCategory");
+                    changeSaveToAdd.id = subCategoryName+"_add";
+                    changeSaveToAdd.className = "button add";
+                    changeSaveToAdd.value = "Add";
+                    changeSaveToAdd.onclick = function(event) {
+                        addSubcategory(subCategoryName);
+                    };
+
+                    var category = document.getElementById("newCategory");
+                    category.type = "button";
+                    category.value = subCategoryName;
+
+                    var changeCancelToDel = document.getElementById("cancelNewCategory");
+                    changeCancelToDel.id = subCategoryName+"_del";
+                    changeCancelToDel.className = "button del";
+                    changeCancelToDel.value = "Delete";
+                    changeCancelToDel.onclick = function(ev) {
+                        deleteCategory(subCategoryName);
+                    };
+
                 }
             }
         };

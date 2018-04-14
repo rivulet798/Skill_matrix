@@ -10,9 +10,7 @@ import org.apache.poi.ss.usermodel.*;
 
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class FileWorker implements Serializable{
     private static Logger logger = Logger.getLogger(FileWorker.class);
@@ -50,7 +48,7 @@ public class FileWorker implements Serializable{
                     if(columnIndex == 0) {
                         category = new Category();
                         category.setName(infoFromFile);
-                        category.setLevel(level);
+                        category.setLevel(0);
                         category.setParentCategory(category);
                         categories.add(category);
                         possibleParent = null;
@@ -237,23 +235,25 @@ public class FileWorker implements Serializable{
 
     public boolean rewriteFile(List<Category> categories){
         cleanFile(file.getName());
-        try(FileInputStream fileInputStream = new FileInputStream(file.getPath());
-            HSSFWorkbook workbook = new HSSFWorkbook(fileInputStream);
-            FileOutputStream fileOutputStream = new FileOutputStream(file.getPath());) {
+        try(FileInputStream fileInputStream = new FileInputStream(file.getPath())) {
 
+            HSSFWorkbook workbook = new HSSFWorkbook(fileInputStream);
             HSSFSheet sheet = workbook.getSheetAt(0);
 
-            int level;
+            Integer level;
             String categoryName;
-            for(int i=1; i <= categories.size(); i++){
-                level = categories.get(i).getLevel();
-                categoryName = categories.get(i).getName();
-                Row row = sheet.createRow(i);
+            int i = 1;
+            Map<String, Integer> categoriesMap = makeMapCategories(categories);
+            for(Map.Entry<String, Integer> category : categoriesMap.entrySet()){
+                categoryName = category.getKey();
+                level = category.getValue();
+                Row row = sheet.createRow(i++);
                 Cell cell = row.createCell(level);
                 cell.setCellValue(categoryName);
             }
-            workbook.write(fileOutputStream);
-            System.out.println("VozvRACHAEM TRUE!!!!!!!!!!!!");
+            try(FileOutputStream fileOutputStream = new FileOutputStream(file.getPath())) {
+                workbook.write(fileOutputStream);
+            }
             return true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -263,21 +263,23 @@ public class FileWorker implements Serializable{
         return false;
     }
 
-    private boolean cleanFile(String fileName){
+    public boolean cleanFile(String fileName){
         ClassLoader classLoader = this.getClass().getClassLoader();
         this.file = new File(classLoader.getResource(fileName).getFile());
 
-        try(FileInputStream fileInputStream = new FileInputStream(file.getPath());
-            HSSFWorkbook workbook = new HSSFWorkbook(fileInputStream);
-            FileOutputStream fileOutputStream = new FileOutputStream(file.getPath());) {
+        try(FileInputStream fileInputStream = new FileInputStream(file.getPath())) {
 
+            HSSFWorkbook workbook = new HSSFWorkbook(fileInputStream);
             HSSFSheet sheet = workbook.getSheetAt(0);
+
             for(int i=1; i<= sheet.getLastRowNum(); i++){
                 Row row = sheet.getRow(i);
                 sheet.removeRow(row);
             }
-            workbook.write(fileOutputStream);
 
+            try(FileOutputStream fileOutputStream = new FileOutputStream(file.getPath())) {
+                workbook.write(fileOutputStream);
+            }
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage());
         } catch (IOException e) {
@@ -285,4 +287,23 @@ public class FileWorker implements Serializable{
         }
         return true;
     }
+
+    private Map<String, Integer> makeMapCategories(List<Category> categories){
+        Map<String, Integer> map = new LinkedHashMap<>();
+        for(Category category : categories){
+            map.put(category.getName(), category.getLevel());
+            putSubCategoriesToMap(map, category.getSubCategories());
+        }
+        return  map;
+    }
+
+    private void putSubCategoriesToMap(Map<String, Integer> map, List<Category> subCategories){
+        if(subCategories != null){
+            for(Category subCategory : subCategories){
+                map.put(subCategory.getName(), subCategory.getLevel());
+                putSubCategoriesToMap(map, subCategory.getSubCategories());
+            }
+        }
+    }
+
 }
